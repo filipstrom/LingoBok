@@ -3,7 +3,82 @@ import "./App.css";
 
 // Foliate registrerar <foliate-view>
 import "./lib/foliate-js/view.js";
+type CaretDocument = Document & {
+  caretPositionFromPoint?: (
+    x: number,
+    y: number
+  ) => {
+    offsetNode: Node;
+    offset: number;
+  } | null;
 
+  caretRangeFromPoint?: (
+    x: number,
+    y: number
+  ) => Range | null;
+};
+
+function getWordAtPoint(
+  doc: Document,
+  x: number,
+  y: number
+): string | null {
+  const caretDoc = doc as CaretDocument;
+
+  let node: Node | null = null;
+  let offset = 0;
+
+  // Firefox / modern API
+  const position = caretDoc.caretPositionFromPoint?.(x, y);
+
+  if (position) {
+    node = position.offsetNode;
+    offset = position.offset;
+  } else {
+    // Chrome / WebView fallback
+    const range = caretDoc.caretRangeFromPoint?.(x, y);
+
+    if (range) {
+      node = range.startContainer;
+      offset = range.startOffset;
+    }
+  }
+
+  if (!node || node.nodeType !== Node.TEXT_NODE) {
+    return null;
+  }
+
+  const text = node.textContent ?? "";
+
+  const isWordCharacter = (character: string) =>
+    /[\p{L}\p{M}'’-]/u.test(character);
+
+  // Klick kan hamna precis efter sista bokstaven
+  if (
+    !isWordCharacter(text[offset] ?? "") &&
+    offset > 0 &&
+    isWordCharacter(text[offset - 1])
+  ) {
+    offset--;
+  }
+
+  if (!isWordCharacter(text[offset] ?? "")) {
+    return null;
+  }
+
+  let start = offset;
+  let end = offset;
+
+  while (start > 0 && isWordCharacter(text[start - 1])) {
+    start--;
+  }
+
+  while (end < text.length && isWordCharacter(text[end])) {
+    end++;
+  }
+
+  return text.slice(start, end);
+}
 function App() {
   const readerRef = useRef<HTMLElement | null>(null);
 
@@ -16,10 +91,37 @@ function App() {
       console.log("Reading position changed:", event);
     };
 
+    const handleLoad = (event: Event) => {
+      const customEvent = event as CustomEvent<{
+        doc: Document;
+        index: number;
+      }>;
+
+      const doc = customEvent.detail.doc;
+
+      console.log("Loaded EPUB section:", customEvent.detail.index);
+
+      doc.addEventListener("click", (event) => {
+        const mouseEvent = event as MouseEvent;
+
+        const word = getWordAtPoint(
+          doc,
+          mouseEvent.clientX,
+          mouseEvent.clientY
+        );
+
+        if (word) {
+          console.log("WORD:", word);
+        }
+      });
+    };
+
     reader.addEventListener("relocate", handleRelocate);
+    reader.addEventListener("load", handleLoad);
 
     return () => {
       reader.removeEventListener("relocate", handleRelocate);
+      reader.removeEventListener("load", handleLoad);
     };
   }, []);
 
