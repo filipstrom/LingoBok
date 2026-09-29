@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { createElement, useEffect, useRef, useState } from "react";
 import "../lib/foliate-js/view.js";
 import "./BookReader.css";
 
@@ -279,9 +279,9 @@ export default function BookReader({
                 </p>
             )}
 
-            <foliate-view
-                ref={readerRef}
-            ></foliate-view>
+            {createElement("foliate-view", {
+                ref: readerRef,
+            })}
 
             {/* Behåll dem tills allt fungerar igen */}
             <div className="book-reader__controls">

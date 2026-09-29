@@ -10,18 +10,12 @@ export type LibraryBook = {
 
 type LibraryProps = {
     books: LibraryBook[];
-    onAddBook: (file: File) => void;
+    onChooseFolder: () => void;
     onBookClick: (book: LibraryBook) => void;
 };
 
 /** A simple Foliate-style bookshelf. */
-export default function Library({ books, onAddBook, onBookClick }: LibraryProps) {
-    const handleFile = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0];
-        if (file) onAddBook(file);
-        event.target.value = "";
-    };
-
+export default function Library({ books, onChooseFolder, onBookClick }: LibraryProps) {
     return (
         <main className="library">
             <header className="library-header">
@@ -39,13 +33,12 @@ export default function Library({ books, onAddBook, onBookClick }: LibraryProps)
                     </button>
                 ))}
 
-                <label className="add-book-card">
+                <button className="add-book-card" type="button" onClick={onChooseFolder}>
                     <div className="add-book-cover">
                         <span className="add-icon">+</span>
-                        <span>Add book</span>
+                        <span>Choose book folder</span>
                     </div>
-                    <input hidden type="file" accept=".epub,application/epub+zip" onChange={handleFile} />
-                </label>
+                </button>
             </section>
         </main>
     );
