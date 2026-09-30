@@ -2,43 +2,39 @@
     position: fixed;
     inset: 0;
     z-index: 20;
+
     width: 100vw;
     height: 100vh;
-    background: #fff;
+
+    margin: 0;
+    padding: 0;
+
     overflow: hidden;
+    border-radius: 0;
+
+    background-color: var(--reader-page-color, #f4efe6);
+    background-image: var(--reader-page-texture);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
 }
 
-.book-reader__viewport {
-    width: 100%;
-    height: 100%;
-}
-
-.book-reader__viewport foliate-view {
+.book-reader foliate-view {
     display: block;
     width: 100%;
     height: 100%;
+
+    margin: 0;
+    padding: 0;
     border: 0;
+
+    background: transparent !important;
 }
 
-.book-reader__back {
-    position: fixed;
-    top: 16px;
-    left: 16px;
-    z-index: 10;
-    width: 48px;
-    height: 48px;
-    border: 0;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.85);
-    color: #292622;
-    font-size: 24px;
-    line-height: 1;
-    cursor: pointer;
-    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.14);
-}
 
-.book-reader__back:hover {
-    background: #fff;
+foliate-view::part(filter) {
+    background: transparent !important;
+    color-scheme: normal !important;
 }
 
 .book-reader__status {
@@ -46,26 +42,9 @@
     top: 50%;
     left: 50%;
     z-index: 5;
+
     transform: translate(-50%, -50%);
     margin: 0;
-    color: #292622;
-}
 
-.book-reader__controls {
-    position: fixed;
-    right: 16px;
-    bottom: 16px;
-    z-index: 10;
-    display: flex;
-    gap: 8px;
-}
-
-.book-reader__controls button {
-    padding: 10px 14px;
-    border: 0;
-    border-radius: 6px;
-    background: rgba(255, 255, 255, 0.9);
     color: #292622;
-    cursor: pointer;
-    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.14);
 }
